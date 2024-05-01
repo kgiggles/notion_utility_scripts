@@ -1,1 +1,5 @@
 requests
+webdriver-manager
+fastapi
+uvicorn
+temporalio

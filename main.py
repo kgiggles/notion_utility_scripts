@@ -3,8 +3,11 @@ import requests
 import json
 import random
 
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
 NOTION_BEARER_TOKEN = os.environ.get("NOTION_BEARER_TOKEN")
-DATABASE_ID = "01f5145b31654dcbb56b7c7d9c20bea4"
+DATABASE_ID = "01f5145b31654dcbb56b7c7d9c20bea4" # TODO update to CENTCOM
 
 _headers = {
     "Authorization": f"Bearer {NOTION_BEARER_TOKEN}",
@@ -17,6 +20,15 @@ TARGET_LIST = [
     "Consulted",
     "Informed",
 ]
+
+app = FastAPI()
+
+@app.post("/webhook/")
+async def webhook_endpoint(request: Request):
+    data = await request.json()
+    # Process your data here (e.g., log it, trigger other actions, etc.)
+    print(data)  # Example action: print data to console
+    return JSONResponse(status_code=200, content={"message": "Data received"})
 
 
 def get_db_data():
@@ -35,155 +47,6 @@ def update_db_properties(payload):
     return response.json()
 
 
-def get_all_properties_values():
-    data = get_db_data()
-    properties = data['properties']
-
-    values = set()
-    colors = set()
-
-    for t in TARGET_LIST:
-        options = properties[t]['multi_select']['options']
-        for x in options:
-            values.add(x['name'])
-            colors.add(x['color'])
-
-    values_list = sorted(values)
-    return [
-        {
-            "name": i,
-            "color": random.choice(sorted(colors)),
-        }
-        for i in values_list
-
-    ]
-
-
-def standardize_property_values():
-    options = [
-        {
-            "name": "ALL",
-            "color": "purple"
-        },
-        {
-            "name": "Allan",
-            "color": "red"
-        },
-        {
-            "name": "Brendan",
-            "color": "brown"
-        },
-        {
-            "name": "CX",
-            "color": "purple"
-        },
-        {
-            "name": "Corporate",
-            "color": "pink"
-        },
-        {
-            "name": "DATA",
-            "color": "purple"
-        },
-        {
-            "name": "Dave",
-            "color": "default"
-        },
-        {
-            "name": "ELT",
-            "color": "orange"
-        },
-        {
-            "name": "ENG",
-            "color": "blue"
-        },
-        {
-            "name": "GTM",
-            "color": "green"
-        },
-        {
-            "name": "Grace",
-            "color": "purple"
-        },
-        {
-            "name": "Jason",
-            "color": "gray"
-        },
-        {
-            "name": "Keith",
-            "color": "blue"
-        },
-        {
-            "name": "Noah",
-            "color": "red"
-        },
-        {
-            "name": "PDE",
-            "color": "green"
-        },
-        {
-            "name": "Product",
-            "color": "brown"
-        },
-        {
-            "name": "REV OPS",
-            "color": "pink"
-        },
-        {
-            "name": "Sangeetha",
-            "color": "default"
-        },
-        {
-            "name": "Sebastian",
-            "color": "green"
-        },
-        {
-            "name": "Steve",
-            "color": "yellow"
-        },
-        {
-            "name": "Taylor",
-            "color": "gray"
-        },
-        {
-            "name": "Wake",
-            "color": "red"
-        },
-        {
-            "name": "Whitney",
-            "color": "purple"
-        }
-    ]
-    null_out_payload = {
-        "properties": {
-            i: {
-                "multi_select":
-                    {
-                        'options': []
-
-                    }
-
-            }
-            for i in TARGET_LIST
-        }
-    }
-    payload = {
-        "properties": {
-            i: {
-                "multi_select":
-                    {
-                        'options': options
-
-                    }
-
-            }
-            for i in TARGET_LIST
-        }
-    }
-    # needs to null out the previous in order to standardize
-    update_db_properties(null_out_payload)
-    return update_db_properties(payload)
-
 
 if __name__ == '__main__':
-    print(json.dumps(standardize_property_values()))
+    pass
