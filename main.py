@@ -65,12 +65,15 @@ async def webhook_endpoint(request: Request):
 def create_webhook_subscription(callback_url):
     url = "https://cloud.ouraring.com/v2/webhook/subscription"
     headers = {
-        "x-client-id": "your_client_id",
-        "x-client-secret": "your_client_secret",
+        "x-client-id": OURA_CLIENT_ID,
+        "x-client-secret": OURA_CLIENT_SECRET,
         "Content-Type": "application/json"
     }
     payload = {
-        "callback_url": callback_url
+        "callback_url": callback_url,
+        "verification_token": MY_CLIENT_VERIFICATION_TOKEN,
+        "event_type": "create",
+        "data_type": "workout",
     }
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
