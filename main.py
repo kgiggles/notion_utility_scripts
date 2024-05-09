@@ -3,7 +3,7 @@ import requests
 import json
 import random
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 
 NOTION_BEARER_TOKEN = os.environ.get("NOTION_BEARER_TOKEN")
@@ -32,13 +32,52 @@ TARGET_LIST = [
 app = FastAPI()
 
 
+# Endpoint to handle the verification step
+@app.get("/webhook/")
+async def verify_webhook(request: Request):
+    verification_token = request.query_params.get("verification_token")
+    challenge = request.query_params.get("challenge")
+    if not verification_token or not challenge:
+        raise HTTPException(status_code=400,
+                            detail="Missing verification parameters")
+
+    # Verify the verification_token (you can add your verification logic here)
+    # For simplicity, let's assume the verification is successful
+    # You may want to replace this with your actual verification logic
+    if verification_token != "your_verification_token":
+        raise HTTPException(status_code=403,
+                            detail="Invalid verification token")
+
+    return JSONResponse(content={"challenge": challenge})
+
+
+# Endpoint to handle incoming webhook data
 @app.post("/webhook/")
 async def webhook_endpoint(request: Request):
     data = await request.json()
     # Process your data here (e.g., log it, trigger other actions, etc.)
     print(data)  # Example action: print data to console
     return JSONResponse(status_code=200, content={"message": "Data received"})
-    # TODO need to validate wh subscription: https://cloud.ouraring.com/v2/docs#section/Setup
+
+
+# Example of how to create a webhook subscription
+def create_webhook_subscription(callback_url):
+    url = "https://cloud.ouraring.com/v2/webhook/subscription"
+    headers = {
+        "x-client-id": "your_client_id",
+        "x-client-secret": "your_client_secret",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "callback_url": callback_url
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 200:
+        print("Webhook subscription created successfully")
+    else:
+        print("Failed to create webhook subscription:", response.text)
+
+
 
 
 def get_db_data():
@@ -58,5 +97,6 @@ def update_db_properties(payload):
 
 
 
-if __name__ == '__main__':
-    pass
+# if __name__ == '__main__':
+#     # Example usage: create a webhook subscription
+#     create_webhook_subscription("https://yourdomain.com/webhook/")
