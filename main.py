@@ -13,6 +13,7 @@ OURA_API_TOKEN = os.environ.get("OURA_API_TOKEN")
 OURA_BASE_URL = os.environ.get("OURA_BASE_URL")
 OURA_CLIENT_ID = os.environ.get("OURA_CLIENT_ID")
 OURA_CLIENT_SECRET = os.environ.get("OURA_CLIENT_SECRET")
+MY_CLIENT_VERIFICATION_TOKEN = os.environ.get("MY_CLIENT_VERIFICATION_TOKEN")
 
 
 DATABASE_ID = "01f5145b31654dcbb56b7c7d9c20bea4" # TODO update to CENTCOM
@@ -44,7 +45,7 @@ async def verify_webhook(request: Request):
     # Verify the verification_token (you can add your verification logic here)
     # For simplicity, let's assume the verification is successful
     # You may want to replace this with your actual verification logic
-    if verification_token != "your_verification_token":
+    if verification_token != MY_CLIENT_VERIFICATION_TOKEN:
         raise HTTPException(status_code=403,
                             detail="Invalid verification token")
 
