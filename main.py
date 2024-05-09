@@ -82,14 +82,13 @@ def create_webhook_subscription(callback_url):
         print("Failed to create webhook subscription:", response.text)
 
 
-
-
 def get_db_data():
     response = requests.get(
         f'https://api.notion.com/v1/databases/{DATABASE_ID}',
         headers=_headers
     )
     return response.json()
+
 
 def update_db_properties(payload):
     response = requests.patch(
@@ -98,9 +97,3 @@ def update_db_properties(payload):
         json=payload
     )
     return response.json()
-
-
-
-# if __name__ == '__main__':
-#     # Example usage: create a webhook subscription
-#     create_webhook_subscription("https://yourdomain.com/webhook/")
