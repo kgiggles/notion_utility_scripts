@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"  # Expose FastAPI on port 8000
+    environment:
+      - NOTION_BEARER_TOKEN=${NOTION_BEARER_TOKEN}
+      - OURA_API_TOKEN=${OURA_API_TOKEN}
+      - OURA_BASE_URL=${OURA_BASE_URL}
+      - OURA_CLIENT_ID=${OURA_CLIENT_ID}
+      - OURA_CLIENT_SECRET=${OURA_CLIENT_SECRET}
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
